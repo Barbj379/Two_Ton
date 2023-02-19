@@ -219,7 +219,7 @@
     "#visit http://127.0.0.1:8050/ in your web browser.\n",
     "\n",
     "# Build App\n",
-    "app = JupyterDash(__name__)\n",
+    "app = Dash(__name__)\n",
     "server = app.server\n",
     "\n",
     "# Clear the layout and do not display exception till callback gets executed\n",
