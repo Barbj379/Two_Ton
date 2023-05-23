@@ -6,7 +6,6 @@ from dash.dependencies import Input, Output
 
 # Create a dash application
 app = Dash(__name__)
-server = app.server
 
 # Total sales by Item Name
 #tree_data = df.groupby(['Major Category', 'Item Name'])['Net Sales'].mean().reset_index()
@@ -14,12 +13,15 @@ server = app.server
 #bar_data = df.groupby(['Major Category', 'Item Name'])['Net Sales'].mean().reset_index()
 # Percentage of overall sales
 
-df = pd.read_csv('https://raw.githubusercontent.com/Barbj379/Two_Ton/main/Item%20Sales%20Report.csv')
+file_loc0 = "https://raw.githubusercontent.com/Barbj379/Two_Ton/main/Item%20Sales%20Report%20(2).csv"
+file_loc1 = "https://raw.githubusercontent.com/Barbj379/Two_Ton/main/Profit_Loss.csv"
 
+df_menu = pd.read_csv(file_loc0)
+df_pl = pd.read_csv(file_loc1)
 #fig = px.bar(bar_data, x="Major Category", y="Net Sales", color="Item Name",
 #             barmode="group")
 
-items = df['Major Category'].unique()
+items = df_menu['Major Category'].unique()
 
 app.layout = html.Div(children=[
     # New Div for all elements in the new 'row' of the page
@@ -33,14 +35,13 @@ app.layout = html.Div(children=[
             id='category-dropdown', clearable=False,
             value=items, options=[
                 {'label': c, 'value': c}
-                for c in df['Major Category'].unique()
+                for c in df_menu['Major Category'].unique()
             ]),
         dcc.Graph(id='graph0'),
-        html.Label([
-            "Category",
+     #   html.Label([
+     #       "Category",
         ]),
     ])
-])
 
 
 # Callback function that automatically updates the tip-graph based on chosen colorscale
@@ -49,13 +50,15 @@ app.layout = html.Div(children=[
     [Input("category-dropdown", "value")]
 )
 def update_figure(Category):
-    new_df = df[df['Major Category'] == Category]
+    new_df = df_menu[df_menu['Major Category'] == Category]
     new_df = new_df.groupby(['Minor Category', 'Item Name'])['Net Sales'].sum().reset_index()
     new_df.reset_index()
-    fig = px.bar(
-        new_df, x="Minor Category", y="Net Sales", color="Item Name",
-        color_continuous_scale=Category,
-        title="Items")
+    fig = px.treemap(new_df, path=['Minor Category', 'Net Sales', 'Item Name'],
+                         values='Net Sales', color='Net Sales', color_continuous_scale='RdYlBu',
+                         title= 'Net Sales by Craft Beer Product in USD',
+                          hover_data=['Item Name'])
+    fig.update_traces(root_color="lightgrey")
+    fig.update_traces(marker=dict(cornerradius=5))
     return fig
 
 
