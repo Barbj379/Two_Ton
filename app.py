@@ -6,6 +6,7 @@ from dash.dependencies import Input, Output
 
 # Create a dash application
 app = Dash(__name__)
+server = app.server
 
 # Total sales by Item Name
 #tree_data = df.groupby(['Major Category', 'Item Name'])['Net Sales'].mean().reset_index()
